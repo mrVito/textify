@@ -10,7 +10,7 @@ Create an instance of NumberToText class from a correct namespace for your langu
 i.e. for english:
 
     use MrVito\Textify\en_US\NumberToText;
-    $numberToText = NumberToText::create();
+    $numberToText = NumberToText::getInstance();
     
 And just use the method you want...:
 
@@ -20,4 +20,4 @@ And just use the method you want...:
     
 Outputs:
 
-    one hundred twenty three
+    one hundred and twenty three
