@@ -1,0 +1,14 @@
+{
+    "name": "mrvito/textify",
+    "description": "Convert numbers and currency to a readable text",
+    "type": "library",
+    "license": "Apache-2.0",
+    "authors": [
+        {
+            "name": "Vytautas Lozickas",
+            "email": "v.lozickas@gmail.com"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {}
+}
