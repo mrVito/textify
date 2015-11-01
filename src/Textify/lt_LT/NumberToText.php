@@ -1,6 +1,6 @@
-<?php namespace VTStudios\Language\NumberToText\LT_LT;
+<?php namespace MrVito\Language\NumberToText\LT_LT;
 
-use VTStudios\Language\NumberToText\NumberToText as BaseNumberToText;
+use MrVito\Language\NumberToText\NumberToText as BaseNumberToText;
 
 class NumberToText extends BaseNumberToText
 {

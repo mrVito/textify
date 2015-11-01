@@ -1,4 +1,4 @@
-<?php namespace VTStudios\Language\NumberToText;
+<?php namespace MrVito\Language\NumberToText;
 
 abstract class NumberToText
 {
