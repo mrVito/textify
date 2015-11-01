@@ -1,6 +1,6 @@
-<?php namespace MrVito\Language\NumberToText\en_US;
+<?php namespace MrVito\Textify\NumberToText\en_US;
 
-use MrVito\Language\NumberToText\NumberToText as BaseNumberToText;
+use MrVito\Textify\NumberToText\NumberToText as BaseNumberToText;
 
 class NumberToText extends BaseNumberToText
 {
