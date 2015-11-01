@@ -1,4 +1,4 @@
-<?php namespace MrVito\Textify\NumberToText;
+<?php namespace MrVito\Textify;
 
 abstract class NumberToText
 {
@@ -6,6 +6,8 @@ abstract class NumberToText
 	protected $twoDigitNames;
 	protected $threeDigitNames;
 	protected $postfixNames;
+	protected $hundredsAndTensSeparator;
+	protected $numberGroupsSeparator;
 	protected $currencyNames;
 	protected $currencyCombiner;
 
@@ -14,20 +16,25 @@ abstract class NumberToText
 	 */
 	protected static $instance = null;
 
-	public static function create()
+	protected function __construct()
+	{
+		$this->setUpToTwentyNames();
+		$this->setTwoDigitNames();
+		$this->setThreeDigitNames();
+		$this->setPostfixNames();
+		$this->setHundredsAndTensSeparator();
+		$this->setNumberGroupsSeparator();
+		$this->setCurrencyNames();
+		$this->setCurrencyCombiner();
+	}
+
+	public static function getInstance()
 	{
 		if(static::$instance !== null) {
 			return static::$instance;
 		}
 
 		static::$instance = new static();
-
-		static::$instance->setUpToTwentyNames();
-		static::$instance->setTwoDigitNames();
-		static::$instance->setThreeDigitNames();
-		static::$instance->setPostfixNames();
-		static::$instance->setCurrencyNames();
-		static::$instance->setCurrencyCombiner();
 
 		return static::$instance;
 	}
@@ -59,14 +66,35 @@ abstract class NumberToText
 	 * i.e.:<br/>
 	 * <pre>
 	 * [
-	 *    ['t?kstan', 'tis', '?iai', '?i?'],
-	 *    ['milijon', 'as', 'ai', '?'],
+	 *    ['tūkstan', 'tis', 'čiai', 'čių'],
+	 *    ['milijon', 'as', 'ai', 'ų'],
 	 *    [...],
 	 * ]
 	 * </pre>
 	 * @return array
 	 */
 	protected abstract function getPostfixNames();
+
+	/**
+	 * This function must return a string separator for hundreds and tens
+	 * i.e. when 'and' is returned, then returned number strings might look something like this:<br/>
+	 * "one hundred <b>and</b> two",<br/>
+	 * "two hundred <b>and</b> thirty four",<br/>
+	 * ...
+	 * @return array
+	 */
+	protected abstract function getHundredsAndTensSeparator();
+
+	/**
+	 * This function must return a string separator for groups of numbers.
+	 * One group is considered a group of three digits.
+	 * i.e. when ',' (comma) is returned, then returned number strings might look something like this:<br/>
+	 * "one thousand<b>,</b> two hundred and thirty four",<br/>
+	 * "two hundred and thirty four thousand<b>,</b> five hundred and sixty seven",<br/>
+	 * ...
+	 * @return array
+	 */
+	protected abstract function getNumberGroupsSeparator();
 
 	/**
 	 * This function must return an array of currency names in the following format:
@@ -79,8 +107,8 @@ abstract class NumberToText
 	 * i.e.:
 	 * <pre>
 	 * [
-	 *    'whole' => ['eur', 'as', 'ai', '?'],
-	 *    'cents' => ['cent', 'as', 'ai', '?']
+	 *    'whole' => ['eur', 'as', 'ai', 'ų'],
+	 *    'cents' => ['cent', 'as', 'ai', 'ų']
 	 * ]
 	 * </pre>
 	 * @return array
@@ -88,7 +116,7 @@ abstract class NumberToText
 	protected abstract function getCurrencyNames();
 
 	/**
-	 * This function must return a string to concatenate whole and cents portion of money string
+	 * This function must return a string to concatenate whole and cents portions of money string
 	 * i.e. if "and" is returned, then returned money strings might look something like this:
 	 * "one hundred sixty nine eur <b>and</b> twenty seven cents"
 	 * @return string
@@ -123,6 +151,16 @@ abstract class NumberToText
 		$this->postfixNames = array_merge([null], $postfixNames);
 	}
 
+	protected function setHundredsAndTensSeparator()
+	{
+		$this->hundredsAndTensSeparator = $this->getHundredsAndTensSeparator();
+	}
+
+	protected function setNumberGroupsSeparator()
+	{
+		$this->numberGroupsSeparator = $this->getNumberGroupsSeparator();
+	}
+
 	protected function setCurrencyNames()
 	{
 		$this->currencyNames = $this->getCurrencyNames();
@@ -135,11 +173,13 @@ abstract class NumberToText
 
 	public function getText($number)
 	{
-		$numberString = '';
+		$numberStrings = [];
 
 		$strNumber = (string) $number;
 		$numOfDigits = strlen($strNumber);
 		$iterations = ceil($numOfDigits / 3);
+
+		$noLastGroupSeparator = false;
 
 		for ($i = 0; $i < $iterations; $i++)
 		{
@@ -147,24 +187,44 @@ abstract class NumberToText
 
 			$digits = str_split($portion);
 
-			$portionString = '';
+			$portionString = [];
 
 			foreach($digits as $key => $digit) {
 				$digitPos = count($digits) - $key;
 
 				$digitString = '';
 
+				if($i == 0 && $digitPos == 3 && $digit == 0) {
+					$noLastGroupSeparator = true;
+				}
+
 				if($digit == 0) {
 					continue;
 				}
 
-				switch ($digitPos)
-				{
+				switch ($digitPos) {
 					case 1: {
+						if(count($digits) == 3 && $digits[$key - 1] == 0) {
+							if($i == 0) {
+								$portionString[] = $this->hundredsAndTensSeparator;
+							} elseif($i != 0 && $digits[$key - 2] != 0) {
+								$portionString[] = $this->hundredsAndTensSeparator;
+							}
+						}
+
 						$digitString = $this->upToTwentyNames[$digit];
 
 						break;
-					} case 2: {
+					}
+					case 2: {
+						if(count($digits) == 3) {
+							if($i == 0) {
+								$portionString[] = $this->hundredsAndTensSeparator;
+							} elseif($i != 0 && $digits[$key - 1] != 0) {
+								$portionString[] = $this->hundredsAndTensSeparator;
+							}
+						}
+
 						if($digit == 1) {
 							$digitString = $this->upToTwentyNames[intval($digit . $digits[$key + 1])];;
 						} else {
@@ -172,34 +232,52 @@ abstract class NumberToText
 						}
 
 						break;
-					} case 3: {
-						$portionString .= $this->threeDigitNames[$digit];
+					}
+					case 3: {
+						$digitString = $this->threeDigitNames[$digit];
 
 						break;
 					}
 				}
 
-				$portionString .= $digitString . ' ';
+				$portionString[] = $digitString;
 
 				if($digitPos == 2 && $digit == 1) {
 					break;
 				}
 			}
 
-			if($portionString && $i != 0) {
-				$portionString .= ' ' . $this->postfixNames[$i][0] .
+			if(count($portionString) && $i != 0) {
+				$postfixString = $this->postfixNames[$i][0] .
 					$this->generateWordEnding(
 						intval($portion),
 						$this->postfixNames[$i][1],
 						$this->postfixNames[$i][2],
 						$this->postfixNames[$i][3]
 					);
+
+				$portionString[] = $postfixString;
 			}
 
-			$numberString = $portionString . ' ' . $numberString;
+			if(count($portionString)) {
+				$numberStrings[] = join(' ', $portionString);
+			}
 		}
 
-		return $numberString;
+		$result = [];
+
+		foreach ($numberStrings as $key => $numberString) {
+			if($key == 1 && $noLastGroupSeparator) {
+				$result[] = ' ';
+			} elseif($key != 0) {
+				$result[] = ' ';
+				$result[] = $this->numberGroupsSeparator;
+			}
+
+			$result[] = $numberString;
+		}
+
+		return join('', array_reverse($result));
 	}
 
 	public function getMoneyText($number, $delimiter = ',')
@@ -237,18 +315,18 @@ abstract class NumberToText
 				$reminder = $multiple;
 				break;
 			} case $count % 10 == 0: {
-			$reminder = $genitive;
-			break;
-		} case $lastTwoDigits > 10 && $lastTwoDigits < 20: {
-			$reminder = $genitive;
-			break;
-		} case $lastDigit == 1: {
-			$reminder = $single;
-			break;
-		} case $lastDigit > 1 && $lastDigit <= 9: {
-			$reminder = $multiple;
-			break;
-		}
+				$reminder = $genitive;
+				break;
+			} case $lastTwoDigits > 10 && $lastTwoDigits < 20: {
+				$reminder = $genitive;
+				break;
+			} case $lastDigit == 1: {
+				$reminder = $single;
+				break;
+			} case $lastDigit > 1 && $lastDigit <= 9: {
+				$reminder = $multiple;
+				break;
+			}
 		}
 
 		return $reminder;

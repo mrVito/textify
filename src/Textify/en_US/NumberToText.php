@@ -1,6 +1,6 @@
-<?php namespace MrVito\Textify\NumberToText\en_US;
+<?php namespace MrVito\Textify\en_US;
 
-use MrVito\Textify\NumberToText\NumberToText as BaseNumberToText;
+use MrVito\Textify\NumberToText as BaseNumberToText;
 
 class NumberToText extends BaseNumberToText
 {
@@ -72,6 +72,16 @@ class NumberToText extends BaseNumberToText
 			['sextillion', '', '', ''],
 			['septillion', '', '', ''],
 		];
+	}
+
+	protected function getHundredsAndTensSeparator()
+	{
+		return 'and';
+	}
+
+	protected function getNumberGroupsSeparator()
+	{
+		return ',';
 	}
 
 	protected function getCurrencyNames()

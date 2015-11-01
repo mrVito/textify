@@ -1,6 +1,6 @@
-<?php namespace MrVito\Textify\NumberToText\LT_LT;
+<?php namespace MrVito\Textify\LT_LT;
 
-use MrVito\Textify\NumberToText\NumberToText as BaseNumberToText;
+use MrVito\Textify\NumberToText as BaseNumberToText;
 
 class NumberToText extends BaseNumberToText
 {
@@ -72,6 +72,16 @@ class NumberToText extends BaseNumberToText
 			['sikstilijon', 'as', 'ai', 'ų'],
 			['oktalijon', 'as', 'ai', 'ų'],
 		];
+	}
+
+	protected function getHundredsAndTensSeparator()
+	{
+		return '';
+	}
+
+	protected function getNumberGroupsSeparator()
+	{
+		return '';
 	}
 
 	protected function getCurrencyNames()
