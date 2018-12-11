@@ -1,5 +1,5 @@
 suites:
-    main:
-        namespace: MrVito
-        psr4_prefix: MrVito
-        src_path: src
+  main:
+    namespace: MrVito
+    psr4_prefix: MrVito
+    src_path: src

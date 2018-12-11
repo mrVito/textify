@@ -1,22 +1,22 @@
 {
-    "name": "mrvito/textify",
-    "description": "Convert numbers and currency to a readable text",
-    "type": "library",
-    "license": "MIT",
-    "authors": [
-        {
-            "name": "Vytautas Lozickas",
-            "email": "v.lozickas@gmail.com"
-        }
-    ],
-    "minimum-stability": "stable",
-    "require": {},
-    "require-dev": {
-      "phpspec/phpspec": "~2.0"
-    },
-    "autoload": {
-      "psr-4": {
-        "MrVito\\": "src/"
-      }
+  "name": "mrvito/textify",
+  "description": "Convert numbers and currency to a readable text",
+  "type": "library",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Vytautas Lozickas",
+      "email": "v.lozickas@gmail.com"
     }
+  ],
+  "minimum-stability": "stable",
+  "require": {},
+  "require-dev": {
+    "phpspec/phpspec": "~2.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "MrVito\\": "src/"
+    }
+  }
 }
