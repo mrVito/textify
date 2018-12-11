@@ -2,7 +2,7 @@
     "name": "mrvito/textify",
     "description": "Convert numbers and currency to a readable text",
     "type": "library",
-    "license": "Apache-2.0",
+    "license": "MIT",
     "authors": [
         {
             "name": "Vytautas Lozickas",
